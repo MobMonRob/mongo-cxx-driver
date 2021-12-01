@@ -1,140 +1,85 @@
-# Contributing Guidelines
+## Contributing to the MongoDB Legacy C++ Driver Project
 
-### Commit Messages
+Pull requests are always welcome, and the MongoDB dev team appreciates any help the community can
+give to help make MongoDB better.
 
-If a pull-request addresses a JIRA ticket, for a single-commit PR, prefix
-the subject line with the ticket ID.  (For a multi-commit PR, we will add
-the ID later when we squash or merge it.)
+For any particular improvement you want to make, you can begin a discussion on the
+[MongoDB Developers Forum][dev-forum]. This is the best place discuss your proposed improvement (and its
+implementation) with the core development team.
 
-> CXX-883 Add commit message conventions to CONTRIBUTING.md
+[dev-forum]: https://groups.google.com/forum/?fromgroups#!forum/mongodb-dev "MongoDB Developers Forum"
 
-Capitalize subject lines and don't use a trailing period.  Keep the subject
-at most 70 characters long.  Use active voice!  Imagine this preamble to get
-your phrasing right:
 
-> *If applied, this commit will...* [your subject line]
+## Getting Started
 
-See Chris Beams'
-[How to write a git commit message](http://chris.beams.io/posts/git-commit/)
-for more good guidelines to follow.
+- Create a [MongoDB JIRA account][jira-account].
+- Create a [Github account][github-account].
+- Fork the repository on Github at https://github.com/mongodb/mongo-cxx-driver.
+- Check out the 'legacy' branch 'git checkout legacy'
 
-### Lifecycle Methods
+[jira-account]: https://jira.mongodb.org/secure/Signup!default.jspa "MongoDB JIRA Signup"
+[github-account]: https://github.com/signup/free "Githup Signup"
 
- - default-or-argument-bearing 'user' constructors
 
- - declaration-or-deletion-of-move-constructor
- - declaration-or-deletion-of-move-assignment-operator
+## JIRA Tickets
 
- - declaration-or-deletion-of-copy-constructor
- - declaration-or-deletion-of-copy-assignment-operator
+All commits to the C++ driver  repository must reference an issue in the [CXX project][cxx-project]
+of the MongoDB JIRA. Before creating any new tickets, please search the existing backlog for any open
+tickets that represent your change request. If there is not one, then you should create a new
+ticket. Tickets specific to the legacy driver should be filed the label [legacy-cxx][legacy-cxx].
 
- - declaration-of-dtor
+For bugs, please clearly describe the issue you are resolving, including the platforms on which
+the issue is present and clear steps to reproduce.
 
-### Headers
+For improvements or feature requests, be sure to explain the goal or use case and the approach
+your solution will take.
 
-Public headers must have a ".hpp" suffix. Private headers must have a ".hh"
-suffix.
+[cxx-project]: https://jira.mongodb.org/browse/CXX
+[legacy-cxx]: https://jira.mongodb.org/browse/CXX-69?jql=labels%20%3D%20legacy-cxx
 
-General structure:
 
- - License
- - Include Guard (`#pragma once`)
- - Header Prelude
- - System Headers `<vector>` (alphabetical order)
- - Driver Headers `<path/to/header.hpp>` (alphabetical order)
- - Open Namespace mongocxx 
- - `MONGOCXX_INLINE_NAMESPACE_BEGIN`
- -    Code
- - `MONGOCXX_INLINE_NAMESPACE_END`
- - Close Namespace mongocxx
- - Header Postlude
+## The Life Cycle of a Pull Request
 
-Example:
+Here's what happens when you submit a pull request:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-// Copyright 2018-present MongoDB Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+- The MongoDB engineering team will review your pull request to make sure you have included a
+  CXX ticket in your request and signed the contributor agreement.
+- You should receive a response from one of our engineers with additional questions about your
+  contributions.
+- If your pull request matches a ticket and is aligned with the Server Roadmap, it will get
+  triaged and reviewed by the C++ driver and Kernel teams.
+- Pull requests that have been reviewed and approved will be signed off and merged into a
+  development branch and the associated JIRA CXX issue will be resolved with an expected
+  fixVersion.
 
-#pragma once
 
-#include <driver/config/prelude.hpp>
+## Style Guide
 
-#include <vector>
+All commits to the legacy branch must follow the [kernel development rules][kernel-dev-rules].
 
-#include <driver/blah.hpp>
+In particular, all code must follow the MongoDB [kernel code style guidelines][kernel-style-guide].
+For anything not covered in this document you should default to the [Google CPP Style Guide][google-style-guide].
 
-namespace mongocxx {
-MONGOCXX_INLINE_NAMESPACE_BEGIN
+Your commit message should also be prefaced with the relevant JIRA ticket, e.g. "CXX-XXX Fixed a bug in aggregation".
 
-// Declarations
+[kernel-dev-rules]: http://dochub.mongodb.org/core/kernelcodedevelopmentrules
+[kernel-style-guide]: http://dochub.mongodb.org/core/kernelcodestyle
+[google-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
 
-// Inline Implementations
 
-MONGOCXX_INLINE_NAMESPACE_END
-}  // namespace mongocxx
+## Testing
 
-#include <driver/config/postlude.hpp>
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Every non-trivial change to the code base should be accompanied by a relevant addition to or
+modification of the test suite.  If you don't believe this is necessary, please add an explanation
+in the JIRA ticket why no such changes are either needed or possible.
 
-### Class Declarations
+All changes must also pass the full test suite (including your test additions/changes) on your
+local machine before you open a pull request.
 
-Guidelines:
 
- - Blank line at beginning and end of class declaration
- - Public section up top / private at bottom
- - Lifecycle methods first (see rules above)
- - Private Member Ordering
-   - Friendships
-   - Private Constructors
-   - Private Methods
-   - Private Variables
+## Contributor Agreement
 
-Example:
+A patch will only be considered for merging into the upstream codebase after you have signed the
+[contributor agreement][contributor-agreement].
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
-class foo {
-
-    public:
-      foo();
-
-      foo(foo&& other) noexcept;
-      foo& operator=(foo&& other) noexcept;
-
-      ~foo();
-
-    private:
-      friend baz;
-
-      class MONGOCXX_PRIVATE impl;
-      std::unique_ptr<impl> _impl;
-
-};
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-### Inlines
- - Define outside of class declaration
- - Specify inline keyword in declaration and definition (for clarity)
-
-### Relational Operators
- - Prefer to use free functions
-
-### Formatting
-
-The source includes a clang format definitions file (`.clang-format`) to enforce consistent style. Run clang-format (using 3.8) from the root of the repository or use the helper script included in the source:
-
-```
-python ./etc/clang-format.py format
-```
-
-Note, this script will automatically download clang-format 3.8 if it cannot detect it on your system.
+[contributor-agreement]: http://www.mongodb.com/contributor "MongoDB Contributor Agreement"
